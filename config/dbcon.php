@@ -1,6 +1,6 @@
 <?php
 $host = "localhost";
-$port = 3306;
+$port = 3307;
 $user = "root"; // Replace with your username
 $password = ""; // Replace with your password if needed
 $dbname = "pos_system_php";
