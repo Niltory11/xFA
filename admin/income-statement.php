@@ -20,7 +20,7 @@ function getAccountBalanceAsOf(mysqli $conn, int $accountId, string $asOfDate): 
     $acctType = $row['account_type'];
 
     // Assets/Expenses normal debit (debit - credit), others normal credit (credit - debit)
-    if (in_array($acctType, ['asset','expense','cash','bank'], true)) {
+    if (in_array($acctType, ['asset', 'expense', 'cash', 'bank'], true)) {
         $sql = "SELECT COALESCE(SUM(CASE WHEN jel.entry_type='debit' THEN jel.amount WHEN jel.entry_type='credit' THEN -jel.amount ELSE 0 END),0) AS bal
                 FROM journal_entry_lines jel
                 JOIN journal_entries je ON je.id = jel.journal_entry_id

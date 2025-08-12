@@ -12,7 +12,7 @@ function fetchAccountsWithBalances(mysqli $conn, string $as_of_date): array {
         SELECT a.id, a.account_name, a.account_type,
                COALESCE(SUM(
                    CASE 
-                       WHEN a.account_type IN ('asset','expense') THEN 
+                       WHEN a.account_type IN ('asset', 'expense', 'cash', 'bank') THEN 
                            CASE WHEN jel.entry_type='debit' THEN jel.amount WHEN jel.entry_type='credit' THEN -jel.amount ELSE 0 END
                        ELSE 
                            CASE WHEN jel.entry_type='credit' THEN jel.amount WHEN jel.entry_type='debit' THEN -jel.amount ELSE 0 END
@@ -98,6 +98,20 @@ $profit = computeNetProfit($conn, $from_date, $to_date);
 $current_period_np = $profit['net'];
 $total_equity = $total_equity_base + $current_period_np;
 $liab_plus_equity = $total_liabilities + $total_equity;
+
+// Debug information
+$debug_info = [
+    'total_assets' => $total_assets,
+    'total_liabilities' => $total_liabilities,
+    'total_equity_base' => $total_equity_base,
+    'current_period_np' => $current_period_np,
+    'total_equity' => $total_equity,
+    'liab_plus_equity' => $liab_plus_equity,
+    'difference' => $total_assets - $liab_plus_equity,
+    'asset_count' => count($assets),
+    'liability_count' => count($liabilities),
+    'equity_count' => count($equity)
+];
 ?>
 
 <div class="container-fluid px-4">
@@ -141,7 +155,7 @@ $liab_plus_equity = $total_liabilities + $total_equity;
                             <tbody>
                                 <?php foreach ($assets as $a): ?>
                                 <tr>
-                                    <td><?php echo htmlspecialchars($a['account_name']); ?></td>
+                                    <td><?php echo htmlspecialchars($a['account_name']); ?> (<?php echo $a['account_type']; ?>)</td>
                                     <td class="text-end">$<?php echo number_format($a['balance'], 2); ?></td>
                                 </tr>
                                 <?php endforeach; ?>
@@ -160,7 +174,7 @@ $liab_plus_equity = $total_liabilities + $total_equity;
                             <tbody>
                                 <?php foreach ($liabilities as $l): ?>
                                 <tr>
-                                    <td><?php echo htmlspecialchars($l['account_name']); ?></td>
+                                    <td><?php echo htmlspecialchars($l['account_name']); ?> (<?php echo $l['account_type']; ?>)</td>
                                     <td class="text-end">$<?php echo number_format($l['balance'], 2); ?></td>
                                 </tr>
                                 <?php endforeach; ?>
@@ -178,7 +192,7 @@ $liab_plus_equity = $total_liabilities + $total_equity;
                             <tbody>
                                 <?php foreach ($equity as $e): ?>
                                 <tr>
-                                    <td><?php echo htmlspecialchars($e['account_name']); ?></td>
+                                    <td><?php echo htmlspecialchars($e['account_name']); ?> (<?php echo $e['account_type']; ?>)</td>
                                     <td class="text-end">$<?php echo number_format($e['balance'], 2); ?></td>
                                 </tr>
                                 <?php endforeach; ?>
@@ -201,6 +215,23 @@ $liab_plus_equity = $total_liabilities + $total_equity;
 
                     <div class="mt-2 small <?php echo abs($total_assets - $liab_plus_equity) < 0.01 ? 'text-success' : 'text-danger'; ?>">
                         <?php echo abs($total_assets - $liab_plus_equity) < 0.01 ? 'Balanced' : 'Not balanced'; ?>
+                    </div>
+                    
+                    <!-- Debug Information (remove this after fixing) -->
+                    <div class="mt-3 p-3 bg-light border rounded">
+                        <h6 class="text-muted">Debug Information:</h6>
+                        <small>
+                            <strong>Total Assets:</strong> $<?php echo number_format($debug_info['total_assets'], 2); ?><br>
+                            <strong>Total Liabilities:</strong> $<?php echo number_format($debug_info['total_liabilities'], 2); ?><br>
+                            <strong>Total Equity Base:</strong> $<?php echo number_format($debug_info['total_equity_base'], 2); ?><br>
+                            <strong>Current Period NP:</strong> $<?php echo number_format($debug_info['current_period_np'], 2); ?><br>
+                            <strong>Total Equity:</strong> $<?php echo number_format($debug_info['total_equity'], 2); ?><br>
+                            <strong>Liab + Equity:</strong> $<?php echo number_format($debug_info['liab_plus_equity'], 2); ?><br>
+                            <strong>Difference:</strong> $<?php echo number_format($debug_info['difference'], 2); ?><br>
+                            <strong>Asset Count:</strong> <?php echo $debug_info['asset_count']; ?><br>
+                            <strong>Liability Count:</strong> <?php echo $debug_info['liability_count']; ?><br>
+                            <strong>Equity Count:</strong> <?php echo $debug_info['equity_count']; ?>
+                        </small>
                     </div>
                 </div>
             </div>
