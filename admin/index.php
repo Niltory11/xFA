@@ -30,6 +30,39 @@
             </a>
         </div>
 
+        <div class="col-md-3 mb-3">
+            <a href="ledger.php" class="text-decoration-none">
+            <div class="card card-body bg-success p-3">
+                <p class="text-sm mb-0 text-capitalize text-white">Ledger</p>
+                <h5 class="fw-bold mb-0 text-white">
+                View Ledger
+                </h5>
+            </div>
+            </a>
+        </div>
+
+        <div class="col-md-3 mb-3">
+            <a href="receipt.php" class="text-decoration-none">
+            <div class="card card-body bg-info p-3">
+                <p class="text-sm mb-0 text-capitalize text-white">Receipt</p>
+                <h5 class="fw-bold mb-0 text-white">
+                View Receipt
+                </h5>
+            </div>
+            </a>
+        </div>
+
+        <div class="col-md-3 mb-3">
+            <a href="payment.php" class="text-decoration-none">
+            <div class="card card-body bg-secondary p-3">
+                <p class="text-sm mb-0 text-capitalize text-white">Payment</p>
+                <h5 class="fw-bold mb-0 text-white">
+                View Payment
+                </h5>
+            </div>
+            </a>
+        </div>
+
         <!-- <div class="col-md-3 mb-3">
             <div class="card card-body bg-info p-3">
                 <p class="text-sm mb-0 text-capitalize">Total Admins</p>
