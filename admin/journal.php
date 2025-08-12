@@ -1085,12 +1085,13 @@ document.addEventListener('DOMContentLoaded', function() {
 .journal-entries-table {
     border-collapse: separate;
     border-spacing: 0;
+    background: #ffffff;
 }
 
 .journal-entries-table th {
-    background: linear-gradient(135deg, #495057 0%, #343a40 100%);
-    color: white;
-    border: none;
+    background: #f8f9fa;
+    color: #495057;
+    border-bottom: 2px solid #dee2e6;
     padding: 12px 8px;
     font-weight: 600;
     text-transform: uppercase;
@@ -1106,8 +1107,8 @@ document.addEventListener('DOMContentLoaded', function() {
 
 /* Date Row Styling */
 .journal-date-row {
-    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
-    border-left: 4px solid #007bff;
+    background: #e9ecef;
+    border-left: 4px solid #6c757d;
 }
 
 .journal-date-row td {
@@ -1121,7 +1122,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
 /* Debit Entries Row Styling */
 .debit-entries-row {
-    background: linear-gradient(135deg, #fff5f5 0%, #fed7d7 100%);
+    background: #f8f9fa;
     border-left: 4px solid #dc3545;
 }
 
@@ -1137,7 +1138,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
 /* Credit Entries Row Styling */
 .credit-entries-row {
-    background: linear-gradient(135deg, #f0fff4 0%, #c6f6d5 100%);
+    background: #f8f9fa;
     border-left: 4px solid #28a745;
 }
 
@@ -1157,9 +1158,9 @@ document.addEventListener('DOMContentLoaded', function() {
     justify-content: space-between;
     align-items: center;
     padding: 4px 8px;
-    background: rgba(255, 255, 255, 0.7);
+    background: #ffffff;
     border-radius: 4px;
-    border: 1px solid rgba(0, 0, 0, 0.1);
+    border: 1px solid #dee2e6;
 }
 
 .entry-item .account-name {
@@ -1180,9 +1181,9 @@ document.addEventListener('DOMContentLoaded', function() {
     justify-content: space-between;
     align-items: center;
     padding: 6px 8px;
-    background: rgba(0, 0, 0, 0.05);
+    background: #e9ecef;
     border-radius: 4px;
-    border-top: 2px solid rgba(0, 0, 0, 0.1);
+    border-top: 2px solid #dee2e6;
     margin-top: 4px;
 }
 
@@ -1202,20 +1203,20 @@ document.addEventListener('DOMContentLoaded', function() {
 .badge {
     font-size: 0.75rem;
     padding: 6px 10px;
-    border-radius: 20px;
+    border-radius: 4px;
     font-weight: 600;
     text-transform: uppercase;
     letter-spacing: 0.5px;
 }
 
 .badge.bg-danger {
-    background: linear-gradient(135deg, #dc3545 0%, #c82333 100%) !important;
-    box-shadow: 0 2px 4px rgba(220, 53, 69, 0.3);
+    background: #dc3545 !important;
+    color: white;
 }
 
 .badge.bg-success {
-    background: linear-gradient(135deg, #28a745 0%, #1e7e34 100%) !important;
-    box-shadow: 0 2px 4px rgba(40, 167, 69, 0.3);
+    background: #28a745 !important;
+    color: white;
 }
 
 /* Separator Row */

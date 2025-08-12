@@ -194,7 +194,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
     if ($bank_type !== '') $desc .= ' | Type: '.$bank_type;
     if ($account_no !== '') $desc .= ' | Account No: '.$account_no;
 
-    $stmt = $conn->prepare("INSERT INTO accounts (account_name, account_type, description, balance) VALUES (?, 'bank', ?, 0)");
+    $stmt = $conn->prepare("INSERT INTO accounts (account_name, account_type, description, balance) VALUES (?, 'asset', ?, 0)");
     $stmt->bind_param('ss', $account_name, $desc);
     if ($stmt->execute()) {
         echo json_encode(['success'=>true,'id'=>$conn->insert_id,'name'=>$account_name]);
@@ -213,8 +213,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['save_receipt'])) {
     $type = $_POST['receipt_type'] ?? 'cash';
     $asset_account_id = (int)($_POST['asset_account_id'] ?? 0); // cash or bank account
     if ($type === 'cash') {
-        // Force use of the 'Cash' account from Chart of Accounts (not bank)
-        $q = $conn->query("SELECT id FROM accounts WHERE status=1 AND account_type='cash' ORDER BY CASE WHEN account_name='Cash' THEN 0 ELSE 1 END, account_name LIMIT 1");
+        // Force use of the 'Cash' account from Chart of Accounts (treat as asset)
+        $q = $conn->query("SELECT id FROM accounts WHERE status=1 AND (account_type='cash' OR (account_type='asset' AND (account_name LIKE '%Cash%' OR account_name LIKE '%cash%'))) ORDER BY CASE WHEN account_name='Cash' THEN 0 ELSE 1 END, account_name LIMIT 1");
         if ($q && $q->num_rows > 0) { 
             $asset_account_id = (int)$q->fetch_assoc()['id']; 
             error_log("Cash account found - ID: " . $asset_account_id);
@@ -289,13 +289,13 @@ $cash_accounts = [];
 $bank_accounts = [];
 $particular_accounts = [];
 
-$res = $conn->query("SELECT id, account_name FROM accounts WHERE status=1 AND account_type='cash' ORDER BY account_name");
+$res = $conn->query("SELECT id, account_name FROM accounts WHERE status=1 AND (account_type='cash' OR (account_type='asset' AND (account_name LIKE '%Cash%' OR account_name LIKE '%cash%'))) ORDER BY account_name");
 if ($res) { while ($r = $res->fetch_assoc()) { $cash_accounts[] = $r; } }
 
-$res2 = $conn->query("SELECT id, account_name FROM accounts WHERE status=1 AND account_type='bank' ORDER BY account_name");
+$res2 = $conn->query("SELECT id, account_name FROM accounts WHERE status=1 AND (account_type='bank' OR (account_type='asset' AND (account_name LIKE '%Bank%' OR account_name LIKE '%bank%'))) ORDER BY account_name");
 if ($res2) { while ($r = $res2->fetch_assoc()) { $bank_accounts[] = $r; } }
 
-$res3 = $conn->query("SELECT id, account_name FROM accounts WHERE status=1 AND account_type NOT IN ('cash','bank') ORDER BY account_type, account_name");
+$res3 = $conn->query("SELECT id, account_name FROM accounts WHERE status=1 AND account_type NOT IN ('cash','bank') AND account_name NOT LIKE '%Cash%' AND account_name NOT LIKE '%cash%' AND account_name NOT LIKE '%Bank%' AND account_name NOT LIKE '%bank%' ORDER BY account_type, account_name");
 if ($res3) { while ($r = $res3->fetch_assoc()) { $particular_accounts[] = $r; } }
 ?>
 

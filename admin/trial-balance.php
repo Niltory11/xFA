@@ -16,7 +16,7 @@ $trial_balance_query = "
         a.account_type,
         COALESCE(SUM(
             CASE 
-                WHEN a.account_type IN ('asset', 'expense') THEN
+                WHEN a.account_type IN ('asset', 'expense', 'cash', 'bank') THEN
                     CASE 
                         WHEN jel.entry_type = 'debit' THEN jel.amount
                         WHEN jel.entry_type = 'credit' THEN -jel.amount
@@ -43,9 +43,7 @@ $trial_balance_query = "
             WHEN 'revenue' THEN 3
             WHEN 'liability' THEN 4
             WHEN 'capital' THEN 5
-            WHEN 'cash' THEN 6
-            WHEN 'bank' THEN 7
-            ELSE 8
+            ELSE 6
         END, 
         a.account_name
 ";
@@ -63,8 +61,8 @@ while ($row = $trial_balance_result->fetch_assoc()) {
     $balance = $row['balance'];
     
     // Determine debit/credit based on account type and balance
-    if (in_array($row['account_type'], ['asset', 'expense'])) {
-        // Assets and Expenses: Normal balance is debit
+    if (in_array($row['account_type'], ['asset', 'expense', 'cash', 'bank'])) {
+        // Assets, Expenses, Cash, and Bank: Normal balance is debit
         if ($balance >= 0) {
             $row['debit_amount'] = $balance;
             $row['credit_amount'] = 0;
@@ -320,15 +318,16 @@ document.getElementById('as_of_date').addEventListener('change', function() {
     width: 100%;
     border-collapse: collapse;
     font-size: 0.9rem;
+    background: #ffffff;
 }
 
 .trial-balance-table thead th {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    color: white;
+    background: #f8f9fa;
+    color: #495057;
     font-weight: 600;
     padding: 12px 8px;
     text-align: left;
-    border: none;
+    border-bottom: 2px solid #dee2e6;
     font-size: 0.85rem;
     text-transform: uppercase;
     letter-spacing: 0.5px;
@@ -340,7 +339,7 @@ document.getElementById('as_of_date').addEventListener('change', function() {
 
 /* Account Type Header */
 .account-type-header {
-    background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+    background: #e9ecef;
 }
 
 .account-type-header td {
@@ -349,23 +348,22 @@ document.getElementById('as_of_date').addEventListener('change', function() {
 }
 
 .account-type-badge {
-    color: white;
+    color: #495057;
     font-weight: 700;
     font-size: 0.9rem;
     text-transform: uppercase;
     letter-spacing: 1px;
-    text-shadow: 0 1px 2px rgba(0,0,0,0.3);
 }
 
 /* Account Rows */
 .account-row {
     background: white;
     transition: all 0.3s ease;
-    border-bottom: 1px solid #e9ecef;
+    border-bottom: 1px solid #f1f3f4;
 }
 
 .account-row:hover {
-    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+    background: #f8f9fa;
     transform: translateX(2px);
     box-shadow: 0 2px 8px rgba(0,0,0,0.1);
 }
@@ -382,16 +380,15 @@ document.getElementById('as_of_date').addEventListener('change', function() {
 }
 
 .code-badge {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background: #6c757d;
     color: white;
     padding: 4px 8px;
-    border-radius: 12px;
+    border-radius: 4px;
     font-size: 0.75rem;
     font-weight: 600;
     display: inline-block;
     min-width: 60px;
     text-align: center;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
 }
 
 /* Account Name */
@@ -406,7 +403,7 @@ document.getElementById('as_of_date').addEventListener('change', function() {
 }
 
 .account-link:hover {
-    color: #667eea;
+    color: #212529;
     text-decoration: underline;
 }
 
@@ -417,48 +414,45 @@ document.getElementById('as_of_date').addEventListener('change', function() {
 
 .type-badge {
     padding: 4px 8px;
-    border-radius: 12px;
+    border-radius: 4px;
     font-size: 0.75rem;
     font-weight: 600;
     display: inline-block;
     min-width: 80px;
     text-align: center;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    background: #f8f9fa;
+    color: #495057;
+    border: 1px solid #dee2e6;
 }
 
 .type-asset {
-    background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
-    color: white;
+    background: #e3f2fd;
+    color: #1976d2;
+    border: 1px solid #bbdefb;
 }
 
 .type-expense {
-    background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
-    color: white;
+    background: #ffebee;
+    color: #d32f2f;
+    border: 1px solid #ffcdd2;
 }
 
 .type-revenue {
-    background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);
-    color: #495057;
+    background: #e8f5e8;
+    color: #388e3c;
+    border: 1px solid #c8e6c9;
 }
 
 .type-liability {
-    background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%);
-    color: #495057;
+    background: #fff3e0;
+    color: #f57c00;
+    border: 1px solid #ffcc02;
 }
 
 .type-capital {
-    background: linear-gradient(135deg, #ff9a9e 0%, #fecfef 100%);
-    color: #495057;
-}
-
-.type-cash {
-    background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);
-    color: #495057;
-}
-
-.type-bank {
-    background: linear-gradient(135deg, #d299c2 0%, #fef9d7 100%);
-    color: #495057;
+    background: #f3e5f5;
+    color: #7b1fa2;
+    border: 1px solid #e1bee7;
 }
 
 /* Amount Columns */
@@ -470,24 +464,24 @@ document.getElementById('as_of_date').addEventListener('change', function() {
 
 .amount-debit {
     color: #28a745;
-    background: linear-gradient(135deg, #d4edda 0%, #c3e6cb 100%);
+    background: #f8f9fa;
     padding: 4px 8px;
-    border-radius: 6px;
+    border-radius: 4px;
     display: inline-block;
     min-width: 100px;
     text-align: right;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    border: 1px solid #dee2e6;
 }
 
 .amount-credit {
     color: #dc3545;
-    background: linear-gradient(135deg, #f8d7da 0%, #f5c6cb 100%);
+    background: #f8f9fa;
     padding: 4px 8px;
-    border-radius: 6px;
+    border-radius: 4px;
     display: inline-block;
     min-width: 100px;
     text-align: right;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    border: 1px solid #dee2e6;
 }
 
 .amount-zero {
@@ -497,10 +491,10 @@ document.getElementById('as_of_date').addEventListener('change', function() {
 
 /* Totals Row */
 .totals-row {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background: #495057;
     color: white;
     font-weight: 700;
-    border-top: 3px solid #495057;
+    border-top: 3px solid #343a40;
 }
 
 .totals-row td {
@@ -512,27 +506,26 @@ document.getElementById('as_of_date').addEventListener('change', function() {
     font-size: 1.1rem;
     text-transform: uppercase;
     letter-spacing: 1px;
-    text-shadow: 0 1px 2px rgba(0,0,0,0.3);
 }
 
 .total-debit {
     background: rgba(40, 167, 69, 0.2);
     padding: 6px 12px;
-    border-radius: 8px;
+    border-radius: 4px;
     display: inline-block;
     min-width: 120px;
     text-align: right;
-    border: 2px solid rgba(40, 167, 69, 0.3);
+    border: 1px solid rgba(40, 167, 69, 0.3);
 }
 
 .total-credit {
     background: rgba(220, 53, 69, 0.2);
     padding: 6px 12px;
-    border-radius: 8px;
+    border-radius: 4px;
     display: inline-block;
     min-width: 120px;
     text-align: right;
-    border: 2px solid rgba(220, 53, 69, 0.3);
+    border: 1px solid rgba(220, 53, 69, 0.3);
 }
 
 /* Responsive Design */
