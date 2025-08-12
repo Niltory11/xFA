@@ -213,7 +213,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
     
          // Validation
-     if (empty($entry_date) || empty($description)) {
+     if (empty($entry_date)) {
          $message = 'Please fill all required fields.';
          $message_type = 'danger';
     } elseif (empty($debit_accounts) || empty($credit_accounts)) {
@@ -379,8 +379,8 @@ $entries_stmt->close();
                          </div>
                         
                         <div class="mb-3">
-                            <label for="description" class="form-label">Description <span class="text-danger">*</span></label>
-                            <textarea class="form-control" id="description" name="description" rows="3" required><?php echo htmlspecialchars($_POST['description'] ?? ''); ?></textarea>
+                            <label for="description" class="form-label">Description</label>
+                            <textarea class="form-control" id="description" name="description" rows="3"><?php echo htmlspecialchars($_POST['description'] ?? ''); ?></textarea>
                         </div>
                         
                         <!-- Professional Journal Entry Layout -->

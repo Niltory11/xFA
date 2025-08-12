@@ -216,8 +216,8 @@ $debug_info = [
                     <div class="mt-2 small <?php echo abs($total_assets - $liab_plus_equity) < 0.01 ? 'text-success' : 'text-danger'; ?>">
                         <?php echo abs($total_assets - $liab_plus_equity) < 0.01 ? 'Balanced' : 'Not balanced'; ?>
                     </div>
-                    
-                    <!-- Debug Information (remove this after fixing) -->
+                    <!--
+                    Debug Information (remove this after fixing)
                     <div class="mt-3 p-3 bg-light border rounded">
                         <h6 class="text-muted">Debug Information:</h6>
                         <small>
@@ -232,7 +232,7 @@ $debug_info = [
                             <strong>Liability Count:</strong> <?php echo $debug_info['liability_count']; ?><br>
                             <strong>Equity Count:</strong> <?php echo $debug_info['equity_count']; ?>
                         </small>
-                    </div>
+                    </div> -->
                 </div>
             </div>
         </div>

@@ -14,16 +14,12 @@
                 </a>
 
                 <div class="sb-sidenav-menu-heading">Accounting</div>
-                <a class="nav-link <?= $page == 'reports.php' ? 'active':''; ?>" href="reports.php">
-                    <div class="sb-nav-link-icon"><i class="fas fa-chart-line"></i></div>
-                    Reports
-                </a>
-
+                
                 <a class="nav-link <?= $page == 'journal.php' ? 'active':''; ?>" href="journal.php">
                     <div class="sb-nav-link-icon"><i class="fas fa-book"></i></div>
                     Journal Entries
                 </a>
-
+                
                 <a class="nav-link <?= $page == 'accounts.php' ? 'active':''; ?>" href="accounts.php">
                     <div class="sb-nav-link-icon"><i class="fas fa-chart-pie"></i></div>
                     Chart of Accounts
@@ -33,18 +29,6 @@
                     Ledger
                 </a>
                 
-                <a class="nav-link <?= $page == 'trial-balance.php' ? 'active':''; ?>" href="trial-balance.php">
-                    <div class="sb-nav-link-icon"><i class="fas fa-balance-scale"></i></div>
-                    Trial Balance
-                </a>
-                <a class="nav-link <?= $page == 'income-statement.php' ? 'active':''; ?>" href="income-statement.php">
-                    <div class="sb-nav-link-icon"><i class="fas fa-file-invoice-dollar"></i></div>
-                    Income Statement
-                </a>
-                <a class="nav-link <?= $page == 'balance-sheet.php' ? 'active':''; ?>" href="balance-sheet.php">
-                    <div class="sb-nav-link-icon"><i class="fas fa-balance-scale-left"></i></div>
-                    Balance Sheet
-                </a>
                 <a class="nav-link <?= $page == 'receipt.php' ? 'active':''; ?>" href="receipt.php">
                     <div class="sb-nav-link-icon"><i class="fas fa-receipt"></i></div>
                     Receipt
@@ -54,16 +38,34 @@
                     Payment
                 </a>
                 
+                <div class="sb-sidenav-menu-heading">Reports</div>
+                
+                <a class="nav-link <?= ($page == 'trial-balance.php') || ($page == 'income-statement.php') || ($page == 'balance-sheet.php') ? 'collapse active':'collapsed'; ?>" href="#" 
+                data-bs-toggle="collapse" 
+                data-bs-target="#collapseReports" 
+                aria-expanded="false" aria-controls="collapseReports">
 
+                    <div class="sb-nav-link-icon"><i class="fas fa-chart-line"></i></div>
+                    Financial Reports
+                    <div class="sb-sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div>
+                </a>
+                <div class="collapse <?= ($page == 'trial-balance.php') || ($page == 'income-statement.php') || ($page == 'balance-sheet.php') ? 'show':''; ?>" id="collapseReports" aria-labelledby="headingOne" data-bs-parent="#sidenavAccordion">
+                    <nav class="sb-sidenav-menu-nested nav">
+                        <a class="nav-link <?= $page == 'trial-balance.php' ? 'active':''; ?>" href="trial-balance.php">Trial Balance</a>
+                        <a class="nav-link <?= $page == 'income-statement.php' ? 'active':''; ?>" href="income-statement.php">Income Statement</a>
+                        <a class="nav-link <?= $page == 'balance-sheet.php' ? 'active':''; ?>" href="balance-sheet.php">Balance Sheet</a>
+                    </nav>
+                </div>
+                
                 <div class="sb-sidenav-menu-heading">Manage Users</div>
             
 
                 
-
+                
                 <a class="nav-link <?= ($page == 'admins-create.php') || ($page == 'admins.php') ? 'collapse active':'collapsed'; ?>" href="#" 
-                    data-bs-toggle="collapse" 
-                    data-bs-target="#collapseAdmins" 
-                    aria-expanded="false" aria-controls="collapseAdmins">
+                data-bs-toggle="collapse" 
+                data-bs-target="#collapseAdmins" 
+                aria-expanded="false" aria-controls="collapseAdmins">
 
                     <div class="sb-nav-link-icon"><i class="fas fa-columns"></i></div>
                     Admins/Staff
@@ -78,9 +80,12 @@
 
             </div>
         </div>
+
+
+        
         <div class="sb-sidenav-footer">
             <div class="small">Logged in as:</div>
-            Start Bootstrap
+            <?= $_SESSION['loggedInUser']['name']; ?>
         </div>
     </nav>
 </div>
