@@ -107,7 +107,17 @@ if ($selected_account) {
         $ledger_result = $ledger_stmt->get_result();
         
         $running_balance = $opening_balance;
+        $running_debits = 0;
+        $running_credits = 0;
+        
         while ($row = $ledger_result->fetch_assoc()) {
+            // Track running totals of debits and credits
+            if ($row['entry_type'] == 'debit') {
+                $running_debits += $row['amount'];
+            } else {
+                $running_credits += $row['amount'];
+            }
+            
             // Calculate running balance based on account type
             // For Asset and Expense: Balance = previous balance + debit - credit
             // For Revenue, Liability and Capital: Balance = previous balance + credit - debit
@@ -127,6 +137,8 @@ if ($selected_account) {
             }
             
             $row['running_balance'] = $running_balance;
+            $row['running_debits'] = $running_debits;
+            $row['running_credits'] = $running_credits;
             $ledger_data[] = $row;
         }
         $closing_balance = $running_balance;
@@ -200,14 +212,66 @@ if ($selected_account) {
                     </div>
                     <div class="col-md-3">
                         <div class="text-muted">Opening Balance</div>
-                        <div class="fw-bold <?php echo $opening_balance >= 0 ? 'text-success' : 'text-danger'; ?>">
-                            $<?php echo number_format($opening_balance, 2); ?>
+                        <div class="fw-bold <?php 
+                            // Calculate if credits > debits for opening balance
+                            $opening_debits = 0;
+                            $opening_credits = 0;
+                            if ($opening_balance != 0) {
+                                // For opening balance, we need to determine the nature based on account type
+                                if (in_array($account_info['account_type'], ['asset', 'expense'])) {
+                                    // For asset/expense: positive balance means debits > credits (good = green)
+                                    echo $opening_balance >= 0 ? 'text-success' : 'text-danger';
+                                } else {
+                                    // For revenue/liability/capital: positive balance means credits > debits (bad = red)
+                                    echo $opening_balance >= 0 ? 'text-danger' : 'text-success';
+                                }
+                            } else {
+                                echo 'text-success'; // Zero balance is green
+                            }
+                        ?>">
+                            $<?php 
+                            if (in_array($account_info['account_type'], ['asset', 'expense'])) {
+                                echo number_format($opening_balance, 2);
+                            } else {
+                                // For revenue/liability/capital, show negative if credits > debits
+                                if ($opening_balance >= 0) {
+                                    echo '-' . number_format($opening_balance, 2);
+                                } else {
+                                    echo number_format(abs($opening_balance), 2);
+                                }
+                            }
+                            ?>
                         </div>
                     </div>
                     <div class="col-md-3">
                         <div class="text-muted">Closing Balance</div>
-                        <div class="fw-bold <?php echo $closing_balance >= 0 ? 'text-success' : 'text-danger'; ?>">
-                            $<?php echo number_format($closing_balance, 2); ?>
+                        <div class="fw-bold <?php 
+                            // Calculate if credits > debits for closing balance
+                            if ($closing_balance != 0) {
+                                // For closing balance, we need to determine the nature based on account type
+                                if (in_array($account_info['account_type'], ['asset', 'expense'])) {
+                                    // For asset/expense: positive balance means debits > credits (good = green)
+                                    echo $closing_balance >= 0 ? 'text-success' : 'text-danger';
+                                } else {
+                                    // For revenue/liability/capital: positive balance means credits > debits (bad = red)
+                                    echo $closing_balance >= 0 ? 'text-danger' : 'text-success';
+                                }
+                            } else {
+                                echo 'text-success'; // Zero balance is green
+                            }
+                        ?>">
+                            $<?php 
+                            if (in_array($account_info['account_type'], ['asset', 'expense'])) {
+                                echo number_format($closing_balance, 2);
+                            } else {
+                                // For revenue/liability/capital, show negative if credits > debits
+                                if ($closing_balance >= 0) {
+                                    echo '-' . number_format($closing_balance, 2);
+                                } else {
+                                    echo number_format(abs($closing_balance), 2);
+                                }
+                            }
+                            ?>
                         </div>
                     </div>
                     <div class="col-md-3">
@@ -266,8 +330,29 @@ if ($selected_account) {
                                     <td>-</td>
                                     <td class="text-end">-</td>
                                     <td class="text-end">-</td>
-                                    <td class="text-end fw-bold <?php echo $opening_balance >= 0 ? 'text-success' : 'text-danger'; ?>">
-                                        $<?php echo number_format($opening_balance, 2); ?>
+                                    <td class="text-end fw-bold <?php 
+                                        // For opening balance, determine color based on account type
+                                        if ($opening_balance != 0) {
+                                            if (in_array($account_info['account_type'], ['asset', 'expense'])) {
+                                                echo $opening_balance >= 0 ? 'text-success' : 'text-danger';
+                                            } else {
+                                                echo $opening_balance >= 0 ? 'text-danger' : 'text-success';
+                                            }
+                                        } else {
+                                            echo 'text-success';
+                                        }
+                                    ?>">
+                                        $<?php 
+                                        if (in_array($account_info['account_type'], ['asset', 'expense'])) {
+                                            echo number_format($opening_balance, 2);
+                                        } else {
+                                            if ($opening_balance >= 0) {
+                                                echo '-' . number_format($opening_balance, 2);
+                                            } else {
+                                                echo number_format(abs($opening_balance), 2);
+                                            }
+                                        }
+                                        ?>
                                     </td>
                                 </tr>
                                 <?php endif; ?>
@@ -300,8 +385,28 @@ if ($selected_account) {
                                                 -
                                             <?php endif; ?>
                                         </td>
-                                        <td class="text-end fw-bold <?php echo $transaction['running_balance'] >= 0 ? 'text-success' : 'text-danger'; ?>">
-                                            $<?php echo number_format($transaction['running_balance'], 2); ?>
+                                        <td class="text-end fw-bold <?php 
+                                            // Determine color based on credits vs debits
+                                            if (in_array($account_info['account_type'], ['asset', 'expense'])) {
+                                                // For asset/expense: debits > credits = good (green)
+                                                echo $transaction['running_debits'] >= $transaction['running_credits'] ? 'text-success' : 'text-danger';
+                                            } else {
+                                                // For revenue/liability/capital: credits > debits = bad (red)
+                                                echo $transaction['running_credits'] > $transaction['running_debits'] ? 'text-danger' : 'text-success';
+                                            }
+                                        ?>">
+                                            $<?php 
+                                            if (in_array($account_info['account_type'], ['asset', 'expense'])) {
+                                                echo number_format($transaction['running_balance'], 2);
+                                            } else {
+                                                // For revenue/liability/capital, show negative if credits > debits
+                                                if ($transaction['running_credits'] > $transaction['running_debits']) {
+                                                    echo '-' . number_format(abs($transaction['running_balance']), 2);
+                                                } else {
+                                                    echo number_format(abs($transaction['running_balance']), 2);
+                                                }
+                                            }
+                                            ?>
                                         </td>
                                     </tr>
                                 <?php endforeach; ?>
@@ -346,21 +451,25 @@ if ($selected_account) {
                                  <div class="card-body text-center">
                                      <h6 class="text-muted">Net Change</h6>
                                      <h4 class="<?php 
-                                         // For Asset and Expense: positive net change is good (debits > credits)
-                                         // For Revenue, Liability, Capital: positive net change is good (credits > debits)
+                                         // Net Change color logic: if credits > debits = red, if debits ≥ credits = green
                                          if (in_array($account_info['account_type'], ['asset', 'expense'])) {
-                                             $net_change = $total_debits - $total_credits;
-                                             echo $net_change >= 0 ? 'text-success' : 'text-danger';
+                                             // For asset/expense: debits ≥ credits = good (green)
+                                             echo $total_debits >= $total_credits ? 'text-success' : 'text-danger';
                                          } else {
-                                             $net_change = $total_credits - $total_debits;
-                                             echo $net_change >= 0 ? 'text-success' : 'text-danger';
+                                             // For revenue/liability/capital: credits > debits = bad (red)
+                                             echo $total_credits > $total_debits ? 'text-danger' : 'text-success';
                                          }
                                      ?>">
                                          $<?php 
                                          if (in_array($account_info['account_type'], ['asset', 'expense'])) {
                                              echo number_format($total_debits - $total_credits, 2);
                                          } else {
-                                             echo number_format($total_credits - $total_debits, 2);
+                                             // For revenue/liability/capital, show negative if credits > debits
+                                             if ($total_credits > $total_debits) {
+                                                 echo '-' . number_format($total_credits - $total_debits, 2);
+                                             } else {
+                                                 echo number_format($total_debits - $total_credits, 2);
+                                             }
                                          }
                                          ?>
                                      </h4>
